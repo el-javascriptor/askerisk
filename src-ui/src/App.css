@@ -1,0 +1,73 @@
+:root {
+    --accent1: rgb(100,150,255);
+    --accent2: rgb(200,0,200);
+    --background-color: rgb(10,10,10);
+    --blur-radius: 30px;
+    --chat-width: 40vw;
+    --glow-animation: flow-glow 5s infinite;
+    --no-glow: none;
+    --translucent-overlay: transparent;
+}
+
+.main {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--translucent-overlay);
+    top: 0px;
+    left: 0px;
+    animation: var(--no-glow);
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    row-gap: 20px;
+}
+
+.chat-holder {
+    width: var(--chat-width);
+    height: 40vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: safe flex-end;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+    transition: height 0.5s;
+}
+
+.active-chat {
+    height: 60vh;
+}
+
+.chat-holder::-webkit-scrollbar {
+    display: none;
+}
+
+.invisibleScrollElement {
+    display: block;
+    width: 10px;
+    height: 1px;
+    opacity: 0;
+    overflow-anchor: auto;
+}
+
+@keyframes flow-glow {
+    0% {
+        box-shadow: -5px -5px var(--blur-radius) inset var(--accent1), 5px 5px var(--blur-radius) inset var(--accent2);
+    }
+    50% {
+        box-shadow: 5px 5px var(--blur-radius) inset var(--accent1), -5px -5px var(--blur-radius) inset var(--accent2);
+    }
+    100% {
+        box-shadow: -5px -5px var(--blur-radius) inset var(--accent1), 5px 5px var(--blur-radius) inset var(--accent2);
+    }
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url(./components/assets/Montserrat/Montserrat-VariableFont_wght.ttf)
+}

@@ -1,0 +1,82 @@
+.chatBar {
+    width: var(--chat-width);
+    height: fit-content;
+    border-radius: 40px;
+    background-color: var(--background-color);
+    box-shadow: 0px 0px var(--blur-radius) var(--background-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.chatImage {
+    height: 40px;
+    animation: pulse 3s infinite linear;
+    opacity: 1;
+    animation-delay: 0.5s;
+    transition: transform 1s;
+}
+
+.chatImage:hover {
+    transform: rotate(60deg);
+}
+
+.chatInput {
+    width: calc(var(--chat-width) - 100px);
+    text-align: left;
+    color: white;
+    font-family: "Montserrat",  sans-serif;
+    font-size: 20px;
+    outline: none;
+    border: none;
+    background-color: transparent;
+    caret-color: transparent;
+}
+
+.chatInput:empty:before {
+    content: attr(data-placeholder);
+    color: rgb(100,100,100);
+    pointer-events: none;
+    display: block;
+}
+
+.chatInput.commandInput {
+    font-family: monospace;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    20% {
+        transform: scale(0.8);
+        opacity: 0.8;
+    }
+
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes clip-grow {
+    from {
+        opacity: 1;
+        clip-path: circle(0% at 50% 50%);
+    }
+    to {
+        opacity: 1;
+        clip-path: circle(60% at 50% 50%);
+    }
+}

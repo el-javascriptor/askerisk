@@ -1,0 +1,59 @@
+[
+    {
+        "type": "function",
+        "function": {
+            "name": "run_command",
+            "description": "Runs a linux bash command in the terminal, and returns the result.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "command": {
+                        "type": "string",
+                        "description": "The bash command, e.g., ls -a"
+                    }
+                },
+                "required": [
+                    "command"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "thought",
+            "description": "Gives you space to brainstorm next actions. This tool does not perform any actions; instead, it provides a palette for you to outline larger tasks and break down more challenging prompts. Thoughts you put into the brainstorming tool are visible to you, but not to the user. If you use the thought tool, you must answer three questions: 1. What exactly is the user's query trying to get at? 2. What specific steps will I take to find to respond to it? What could go wrong? 3. Any other thoughts you may have as it relates to the query.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "thoughts": {
+                        "type": "string",
+                        "description": "Your brainstorming thoughts."
+                    }
+                },
+                "required": [
+                    "thoughts"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_web",
+            "description": "Allows you to perform a web search. This tool returns the top ~10 results, including web page titles and links.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Your search query. For example, `artificial intelligence`"
+                    }
+                },
+                "required": [
+                    "query"
+                ]
+            }
+        }
+    }
+]
