@@ -52,11 +52,7 @@ def query_gemini(prompt: str | List[StepParam] | List[ToolMessage], clear_histor
         if event.event_type == "interaction.created":
             interaction_id = event.interaction.id
 
-    print("Detected tool call: " + str(tool_info['tool_called']))
-    print("Parameters:" + str(tool_info['tool_arguments']))
-    
     if tool_info['tool_call_id']:
         result = Tool.run_tool(tool_info)
 
-        print("We got result: " + str(result))
         yield from query_gemini([Tool.create_tool_message(tool_info, result)], False)

@@ -7,8 +7,11 @@ class InteractionToolCall(TypedDict):
     tool_call_id: str | None
 
 def process_interaction_event(event, tool_info: InteractionToolCall):
+
+    print(event.event_type)
     
     if event.event_type == "step.start":
+        print(" ", event.step.type)
         if event.step.type == "function_call":
             tool_info['tool_called'] = event.step.name
             tool_info['tool_call_id'] = event.step.id
