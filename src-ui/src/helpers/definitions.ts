@@ -34,7 +34,7 @@ export interface ToolBundle {
     type: "tool";
     name: string;
     arguments: string;
-    results: string;
+    result: string;
 }
 
 export interface EventBundle {
