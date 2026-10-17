@@ -22,7 +22,7 @@ export function streamGenResponse(prompt: string, useOllama: boolean, clear: boo
 
             } else if (data.type == "tool") {
 
-                updateByToken(`TOOL_RAN: ${data.name}`)
+                updateByToken(`<tool>${data.name}</tool>`)
 
             } else if (data.type == "event") {
 
