@@ -9,9 +9,10 @@ import { addTokenToPrevChats } from './helpers/chat_helpers.ts'
 function App() {
 
     const [chats, setChats] = useState<Chat[]>([]);
-    const [clearChatsPending, setClearChatsPending] = useState(false);
     const [useOllama, setUseOllama] = useState(false);
     const [pendingChat, setPendingChat] = useState(false);
+
+    const clearChatsPending = chats.length == 0;
 
     function addTokenToLatestChat(token: string) {
         setChats((prevChats) => addTokenToPrevChats(token, prevChats))
@@ -21,7 +22,6 @@ function App() {
         if (prompt[0] == "/") {
             if (prompt == "/clear") {
                 setChats([]);
-                setClearChatsPending(true);
                 return;
             } else if (prompt == "/mode ollama") {
                 setUseOllama(true);
@@ -47,8 +47,8 @@ function App() {
         });
 
         setPendingChat(true);
+
         streamGenResponse(prompt, useOllama, clearChatsPending, addTokenToLatestChat, (state) => state ? setPendingChat(false) : '');
-        setClearChatsPending(false)
 
         setTimeout(() => {
             const scroll_container = document.querySelector(".chat-holder");
