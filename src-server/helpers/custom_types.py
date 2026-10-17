@@ -13,6 +13,7 @@ class ToolData(TypedDict):
     name: str
     arguments: Dict[str, Any]
 
+# FIXME: Deprecated
 class Data(TypedDict):
     content: str
     tool: bool
@@ -51,7 +52,7 @@ type DataBundle = ToolBundle | EventBundle | TokenBundle
 History = list[Message]
 
 TokenGenerator = Generator[str, None, None]
-ObjectTokenGenerator = Generator[Data, None, None]
+ObjectTokenGenerator = Generator[DataBundle, None, None]
 
 ModelStreamOption = Literal['gemini', 'ollama']
 
