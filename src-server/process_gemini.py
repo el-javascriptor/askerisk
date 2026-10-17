@@ -37,6 +37,7 @@ def query_gemini(prompt: str | List[StepParam] | List[ToolMessage], clear_histor
 
         if isinstance(event, tuple): continue
 
+        # FIXME: This needs to return the InteractionProcessResult type
         token = process_interaction_event(event, tool_info)
 
         if token != None:

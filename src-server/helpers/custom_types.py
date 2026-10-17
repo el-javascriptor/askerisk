@@ -33,13 +33,14 @@ class ToolMessage(TypedDict):
 class ToolBundle(TypedDict):
     type: Literal["tool"]
     name: str
+    arguments: str
     result: str
 
 # INFO: Event microtype (success, failure)
 class EventBundle(TypedDict):
     type: Literal["event"]
     status: Status
-    content: str | None
+    content: str
 
 # INFO: Token microtype (may contain more than one token)
 class TokenBundle(TypedDict):
@@ -60,6 +61,19 @@ class InteractionToolCall(TypedDict):
     tool_called: str | None
     tool_arguments: str
     tool_call_id: str | None
+
+# The following three classes apply to the Interaction Processing
+class InteractionToken(TypedDict):
+    event: Literal["token"]
+    content: str
+
+class InteractionToolCallEnded(TypedDict):
+    event: Literal["tool_call_ended"]
+
+class InteractionSkip(TypedDict):
+    event: Literal["skip"]
+
+type InteractionProcessResult = InteractionToken | InteractionToolCallEnded | InteractionSkip
 
 class WebResult(TypedDict):
     title: str
