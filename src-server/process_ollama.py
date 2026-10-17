@@ -1,8 +1,9 @@
-from helpers.custom_types import History, Message, Role
+from helpers.custom_types import History, Message, Role, TokenBundle, ToolBundle
 from helpers.prepare import MODEL_NAME, TOOLSET_JSON
 from helpers.tools import Tool
 from collections.abc import Generator
 from helpers.custom_types import Data, ObjectTokenGenerator
+import json
 import ollama
 
 # takes in History, returns updated History
@@ -20,10 +21,9 @@ def gen_response(history: History) -> ObjectTokenGenerator:
         if chunk.message.content:
             response_text += chunk.message.content
             
-            object_token: Data = {
-                "content": chunk.message.content,
-                "tool": False,
-                "tool_data": None
+            object_token: TokenBundle = {
+                "type": "token",
+                "content": chunk.message.content
             }
 
             yield object_token
@@ -45,17 +45,18 @@ def gen_response(history: History) -> ObjectTokenGenerator:
     for tool in collected_tool_calls:
         if tool.function.name == "run_command":
             
-            tool_data: Data = {
-                "content": f"<tool>RunCommand({tool.function.arguments['command']})</tool>",
-                "tool_data": None,
-                "tool": False,
+            # run command
+            result = Tool.run_command(tool.function.arguments["command"])
+            
+            tool_data: ToolBundle = {
+                "type": "tool",
+                "arguments": json.dumps(tool.function.arguments),
+                "name": "run_command",
+                "result": result
             }
 
             yield tool_data
 
-            # run command
-            result = Tool.run_command(tool.function.arguments["command"])
-            
             # create tool response
             tool_message: Message = {
                 "role": "tool",
