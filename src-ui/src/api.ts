@@ -32,6 +32,7 @@ export function streamGenResponse(prompt: string, useOllama: boolean, clear: boo
                     return;
                 } else {
                     console.log(`Error: ${data.status}`);
+                    eventSource.close();
                     onFinish(false);
                 }
             }
