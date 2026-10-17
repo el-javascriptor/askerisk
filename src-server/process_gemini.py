@@ -1,7 +1,7 @@
 from google import genai
 from helpers.tools import Tool
 from helpers.misc import load_instructions
-from helpers.custom_types import ObjectTokenGenerator, Data, InteractionToolCall, ToolMessage
+from helpers.custom_types import ObjectTokenGenerator, Data, InteractionToolCall, TokenBundle, ToolBundle, ToolMessage
 from helpers.gemini_helpers import process_interaction_event
 from dotenv import load_dotenv
 from google.genai.interactions import StepParam # type: ignore
@@ -37,15 +37,13 @@ def query_gemini(prompt: str | List[StepParam] | List[ToolMessage], clear_histor
 
         if isinstance(event, tuple): continue
 
-        # FIXME: This needs to return the InteractionProcessResult type
-        token = process_interaction_event(event, tool_info)
+        event_results = process_interaction_event(event, tool_info)
 
-        if token != None:
+        if event_results["event"] == "token":
 
-            object_token: Data = {
-                "content": token,
-                "tool": False,
-                "tool_data": None
+            object_token: TokenBundle = {
+                "type": "token",
+                "content": event_results["content"]
             }
 
             yield object_token
@@ -55,5 +53,13 @@ def query_gemini(prompt: str | List[StepParam] | List[ToolMessage], clear_histor
 
     if tool_info['tool_call_id']:
         result = Tool.run_tool(tool_info)
+        
+        tool_bundle: ToolBundle = {
+            "type": "tool",
+            "name": tool_info["tool_called"] or "Unrecognized Tool",
+            "arguments": tool_info["tool_arguments"],
+            "result": result
+        }
 
+        yield tool_bundle
         yield from query_gemini([Tool.create_tool_message(tool_info, result)], False)
