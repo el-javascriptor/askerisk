@@ -27,3 +27,25 @@ export interface CursorProps extends PositionType {
     commandMode: boolean;
     visible: boolean;
 }
+
+// The following types are related to what we receive from the backend
+// during the stream. This is the new CJF (Bundle) format.
+export interface ToolBundle {
+    type: "tool";
+    name: string;
+    arguments: string;
+    results: string;
+}
+
+export interface EventBundle {
+    type: "event";
+    status: "success" | "error";
+    content: string;
+}
+
+export interface TokenBundle {
+    type: "token";
+    content: string
+}
+
+export type DataBundle = ToolBundle | EventBundle | TokenBundle;
