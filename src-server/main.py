@@ -1,4 +1,4 @@
-from helpers.custom_types import TokenGenerator, ModelStreamOption, History 
+from helpers.custom_types import EventBundle, TokenGenerator, ModelStreamOption, History 
 from process_gemini import query_gemini
 from process_ollama import gen_response, add_prompt_to_history
 import json
@@ -29,4 +29,5 @@ def stream_response(prompt: str, model: ModelStreamOption, clear_history: bool) 
         yield f"data: {token_str}\n\n"
 
     # let's the front end know that the stream has completed.
-    yield f"data: [DONE]\n\n"
+    done_flag: EventBundle = { "type": "event", "status": "success", "content": "done"}
+    yield f"data: {json.dumps(done_flag)}\n\n"
