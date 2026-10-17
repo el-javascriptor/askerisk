@@ -1,3 +1,5 @@
+import type { DataBundle } from "./helpers/definitions";
+
 const API_ENDPOINT = "http://localhost:5000"
 
 export function streamGenResponse(prompt: string, useOllama: boolean, clear: boolean, updateByToken: (string) => void, onFinish: Function) {
@@ -11,16 +13,29 @@ export function streamGenResponse(prompt: string, useOllama: boolean, clear: boo
     // each time we recieve a token
     eventSource.onmessage = (event) => {
 
-        if (event.data == "[DONE]") {
-            eventSource.close();
-            onFinish(true);
-            return;
-        }
         try {
-            const data = JSON.parse(event.data);
+            const data: DataBundle = JSON.parse(event.data);
 
-            // tools will processed later
-            updateByToken(data.content);
+            if (data.type == "token") {
+
+                updateByToken(data.content);
+
+            } else if (data.type == "tool") {
+
+                updateByToken(`TOOL_RAN: ${data.name}`)
+
+            } else if (data.type == "event") {
+
+                if (data.status == "success") {
+                    eventSource.close();
+                    onFinish(true);
+                    return;
+                } else {
+                    console.log(`Error: ${data.status}`);
+                    onFinish(false);
+                }
+            }
+
         } catch (error) {
             alert(`Parse Error: ${error}`)
             eventSource.close();
