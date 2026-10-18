@@ -2,27 +2,32 @@ import styles from './chatresponse.module.css'
 import CommandItem from './microComponents/commandItem';
 import ThoughtItem from './microComponents/thoughtItem';
 import askeriskLogo from './assets/AskeriskSmall.svg'
-import type { ParseStatus, ContinuityStatus, ChatFragment } from '../helpers/definitions';
+import type { ParseStatus, ContinuityStatus, ChatFragment, DataBundle } from '../helpers/definitions';
 
 interface ChatItemProps {
-    content: string;
+    bundles: DataBundle[];
     role: "user" | "assistant";
     show_loading_animation: boolean;
 }
 
-export function ChatItem({ content, role, show_loading_animation }: ChatItemProps) {
+export function ChatItem({ bundles, role, show_loading_animation }: ChatItemProps) {
 
     const roleCSS = role == "user" ? styles.userRole : styles.assistantRole;
-    const structuredContent = parseContent(content);
 
     return <div className={`${styles.chatResponse} ${roleCSS}`}>
-        {role == "user" ? content : structuredContent.map((value, index) => {
-            if (value.type == "THOUGHT") {
-                return <ThoughtItem key={index} fragment={value} />;
-            } else if (value.type == "TOOL") {
-                return <CommandItem key={index} fragment={value} />;
+        {bundles.map((bundle, index) => {
+            if (bundle.type == "tool" && bundle.name == "thought") {
+                return <ThoughtItem key={index} bundle={bundle} />;
+            } else if (bundle.type == "tool") {
+                return <CommandItem key={index} bundle={bundle} />;
+
+                // TODO: Create new event microComponent
+            } else if (bundle.type == "event") {
+                if (bundle.status == "error") {
+                    return <p key={index}>EVENT: {bundle.content}</p>;
+                }
             } else {
-                return <p key={index}>{value.content}</p>;
+                return <p key={index}>{bundle.content}</p>;
             }
         })}
 
@@ -30,6 +35,7 @@ export function ChatItem({ content, role, show_loading_animation }: ChatItemProp
     </div>
 }
 
+/*
 // TODO: Refactor to include new CJF format
 function parseContent(content: string) {
     let status: ParseStatus = "TEXT";
@@ -88,4 +94,4 @@ function parseContent(content: string) {
 
     return structured_content;
 }
-
+*/

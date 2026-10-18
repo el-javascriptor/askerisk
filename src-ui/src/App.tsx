@@ -1,54 +1,18 @@
-import { useState } from 'react'
+import { useChats } from './hooks/useChats.ts'
 import './App.css'
 import ChatBar from './components/chatbar'
 import { ChatItem } from './components/chatresponse'
-import { streamGenResponse } from './api'
-import type { Chat } from "./helpers/definitions.ts"
-import { addTokenToPrevChats } from './helpers/chat_helpers.ts'
 
+// TODO: set pending chat based on presense of an event bundle as last bundle
 function App() {
 
-    const [chats, setChats] = useState<Chat[]>([]);
-    const [useOllama, setUseOllama] = useState(false);
-    const [pendingChat, setPendingChat] = useState(false);
+    const { chats, process_prompt } = useChats();
 
-    const clearChatsPending = chats.length == 0;
-
-    function addTokenToLatestChat(token: string) {
-        setChats((prevChats) => addTokenToPrevChats(token, prevChats))
-    }
+    const pendingChat = chats.at(-1)?.content.at(-1)?.type != "event";
 
     function generateResponse(prompt: string) {
-        if (prompt[0] == "/") {
-            if (prompt == "/clear") {
-                setChats([]);
-                return;
-            } else if (prompt == "/mode ollama") {
-                setUseOllama(true);
-                return;
-            } else if (prompt == "/mode gemini") {
-                setUseOllama(false);
-                return;
-            }
-        }
 
-        const new_chat: Chat = {
-            role: "user",
-            content: prompt
-        }
-
-        const response: Chat = {
-            role: "assistant",
-            content: ""
-        }
-
-        setChats((prevChats) => {
-            return [...prevChats, new_chat, response]
-        });
-
-        setPendingChat(true);
-
-        streamGenResponse(prompt, useOllama, clearChatsPending, addTokenToLatestChat, (state) => state ? setPendingChat(false) : '');
+        process_prompt(prompt);
 
         setTimeout(() => {
             const scroll_container = document.querySelector(".chat-holder");
@@ -64,7 +28,7 @@ function App() {
             <div className={`chat-holder ${chats.length > 0 ? 'active-chat' : ''}`}>
                 {
                     chats.map((chat, index) => {
-                        return <ChatItem content={chat.content} key={index} role={chat.role} show_loading_animation={index == chats.length - 1 && pendingChat == true} />
+                        return <ChatItem bundles={chat.content} key={index} role={chat.role} show_loading_animation={index == chats.length - 1 && pendingChat == true} />
                     })
                 }
                 <div className='invisibleScrollElement' />

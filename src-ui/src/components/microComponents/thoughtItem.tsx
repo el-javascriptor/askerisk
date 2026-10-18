@@ -1,15 +1,15 @@
 import styles from './thoughtItem.module.css'
-import type { ChatFragment } from '../../helpers/definitions';
+import type { ChatFragment, ToolBundle } from '../../helpers/definitions';
 
 interface ThoughtItemProps {
-    fragment: ChatFragment;
+    bundle: ToolBundle;
 }
 
-function ThoughtItem({ fragment }: ThoughtItemProps) {
+function ThoughtItem({ bundle }: ThoughtItemProps) {
 
     return <div className={styles.thoughtItem}>
         <div className={styles.dot}></div>
-        Thought ({fragment.info} tokens)
+        Thought
     </div>
 }
 

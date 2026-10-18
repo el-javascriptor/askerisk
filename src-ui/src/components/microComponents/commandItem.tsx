@@ -1,15 +1,15 @@
 import styles from './commandItem.module.css'
-import type { ChatFragment } from "../../helpers/definitions"
+import type { ChatFragment, ToolBundle } from "../../helpers/definitions"
 
 interface CommandItemProps {
-    fragment: ChatFragment;
+    bundle: ToolBundle;
 }
 
-function CommandItem({ fragment }: CommandItemProps) {
+function CommandItem({ bundle }: CommandItemProps) {
 
-    return <div className={`${styles.commandItem} ${fragment.content.includes('Thought') ? styles.thoughtStyle : ''}`}>
+    return <div className={`${styles.commandItem}`}>
         <div className={styles.dot}></div>
-        {fragment.content}
+        {bundle.name}
     </div>
 }
 

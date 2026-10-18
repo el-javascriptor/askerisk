@@ -2,7 +2,7 @@ import type { DataBundle } from "./helpers/definitions";
 
 const API_ENDPOINT = "http://localhost:5000"
 
-export function streamGenResponse(prompt: string, useOllama: boolean, clear: boolean, updateByToken: (string) => void, onFinish: Function) {
+export function streamGenResponse(prompt: string, useOllama: boolean, clear: boolean, updateByBundle: (bundle: DataBundle) => void, onFinish: Function) {
 
     // filter prompt, create random id, send to eventSource
     const filtered_prompt = encodeURIComponent(prompt);
@@ -16,15 +16,9 @@ export function streamGenResponse(prompt: string, useOllama: boolean, clear: boo
         try {
             const data: DataBundle = JSON.parse(event.data);
 
-            if (data.type == "token") {
+            updateByBundle(data);
 
-                updateByToken(data.content);
-
-            } else if (data.type == "tool") {
-
-                updateByToken(`<tool>${data.name}</tool>`)
-
-            } else if (data.type == "event") {
+            if (data.type == "event") {
 
                 if (data.status == "success") {
                     eventSource.close();

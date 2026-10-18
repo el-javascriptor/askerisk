@@ -5,7 +5,7 @@ export type ContinuityStatus = "COMPLETE" | "PENDING";
 // TODO: Needs new CJF format
 export interface Chat {
     role: "user" | "assistant";
-    content: string;
+    content: DataBundle[];
 }
 
 // a small piece of chat (text, thought, tools, etc)
