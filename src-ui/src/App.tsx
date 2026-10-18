@@ -3,7 +3,6 @@ import './App.css'
 import ChatBar from './components/chatbar'
 import { ChatItem } from './components/chatresponse'
 
-// TODO: set pending chat based on presense of an event bundle as last bundle
 function App() {
 
     const { chats, process_prompt } = useChats();
