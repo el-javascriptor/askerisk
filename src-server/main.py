@@ -1,6 +1,7 @@
 from helpers.custom_types import EventBundle, TokenGenerator, ModelStreamOption, History 
 from process_gemini import query_gemini
-from process_ollama import gen_response, add_prompt_to_history
+from process_ollama import gen_response
+from helpers.ollama_helpers import HistoryManager
 import json
 
 # the global history object
@@ -20,7 +21,7 @@ def stream_response(prompt: str, model: ModelStreamOption, clear_history: bool) 
         if model == 'gemini':
             stream = query_gemini(prompt, clear_history)
         else:
-            history = add_prompt_to_history(prompt, history, 'user')
+            HistoryManager.appendUserMessageToHistory(history, prompt)
             stream = gen_response(history)
 
         # one `token` is one Data object.

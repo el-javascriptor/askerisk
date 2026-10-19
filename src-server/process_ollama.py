@@ -1,8 +1,8 @@
-from helpers.custom_types import History, Message, Role, TokenBundle, ToolBundle
+from helpers.custom_types import History, ToolBundle
 from helpers.prepare import MODEL_NAME, TOOLSET_JSON
 from helpers.tools import Tool
-from collections.abc import Generator
-from helpers.custom_types import Data, ObjectTokenGenerator
+from helpers.custom_types import ObjectTokenGenerator
+from helpers.ollama_helpers import HistoryManager, process_chunk
 import json
 import ollama
 
@@ -18,67 +18,32 @@ def gen_response(history: History) -> ObjectTokenGenerator:
 
     # receive chunks from response stream, append to response text
     for chunk in response_stream:
-        if chunk.message.content:
-            response_text += chunk.message.content
-            
-            object_token: TokenBundle = {
-                "type": "token",
-                "content": chunk.message.content
-            }
 
-            yield object_token
+        token = process_chunk(chunk, collected_tool_calls)
 
-        # if there's a tool call, we add to the tool calls.
-        if chunk.message.tool_calls:
-            collected_tool_calls.extend(chunk.message.tool_calls)
+        if token:
+            yield token
+            response_text += token["content"]
 
-    # create new message
-    new_message: Message = {
-        "role": "assistant",
-        "content": response_text
-    }
+    HistoryManager.appendAssistantMessageToHistory(history, response_text)
 
-    # append to history
-    history.append(new_message)
-    
     # if there is a tool call present, call the tool, then generate new response.
     for tool in collected_tool_calls:
-        if tool.function.name == "run_command":
-            
-            # run command
-            result = Tool.run_command(tool.function.arguments["command"])
-            
-            tool_data: ToolBundle = {
-                "type": "tool",
-                "arguments": json.dumps(tool.function.arguments),
-                "name": "run_command",
-                "result": result
-            }
 
-            yield tool_data
+        interaction_tool = Tool.ollama_tool_to_interaction(tool)
 
-            # create tool response
-            tool_message: Message = {
-                "role": "tool",
-                "content": f"Command: {tool.function.arguments["command"]}\nResult: {result}"
-            }
+        result = Tool.run_tool(interaction_tool)
 
-            # append to history
-            history.append(tool_message)
+        tool_bundle: ToolBundle = {
+            "type": "tool",
+            "name": tool.function.name,
+            "arguments": json.dumps(tool.function.arguments),
+            "result": result
+        }
+
+        yield tool_bundle
+
+        # create tool response
+        HistoryManager.appendToolMessageToHistory(history, tool.function.name, result)
 
     if collected_tool_calls: yield from gen_response(history)
-
-def add_prompt_to_history(prompt: str, history: History, role: Role) -> History:
-    new_message: Message = {
-        "role": role,
-        "content": prompt
-    }
-
-    history.append(new_message)
-    return history
-
-def boot_model():
-    
-    ollama.chat(model=MODEL_NAME, messages=[{"role": "user", "content": "Booting you up..."}], tools=TOOLSET_JSON, keep_alive="2m", options={"num_predict": 1})
-
-    return True

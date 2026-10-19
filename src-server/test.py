@@ -1,9 +1,6 @@
-from process_gemini import query_gemini
+from helpers.browser_tools import search_web
 
-while True:
-    prompt = input("\n>> ")
+for i in range(10):
+    results = search_web("latest artificial intelligence news updates")
 
-    stream = query_gemini(prompt, True)
-
-    for token in stream:
-        print(token, end="", flush=True)
+    print(results)

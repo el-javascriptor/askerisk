@@ -24,7 +24,7 @@ export function ChatItem({ bundles, role, show_loading_animation }: ChatItemProp
                 // TODO: Create new event microComponent
             } else if (bundle.type == "event") {
                 if (bundle.status == "error") {
-                    return <p key={index}>EVENT: {bundle.content}</p>;
+                    return <p key={index}>ERROR: {bundle.content}</p>;
                 }
             } else {
                 return <p key={index}>{bundle.content}</p>;

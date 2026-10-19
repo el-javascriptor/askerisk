@@ -1,3 +1,4 @@
+import logging
 import subprocess
 from pathlib import Path
 import json
@@ -21,7 +22,7 @@ class Tool:
             return f"Could not execute that command. Check your syntax, and make sure you have correct privileges. Error: \n{e.output}"
 
     @staticmethod
-    def brainstorm(thoughts: str) -> str:
+    def thought(thoughts: str) -> str:
         
         return f"Thoughts: \n{thoughts}"
 
@@ -45,7 +46,7 @@ class Tool:
         for result in results:
             tool_string += f"[{result['title']}]({result['url']})\n\t{result['body']}\n"
 
-        return tool_string
+        return tool_string if tool_string != "" else "Could not fetch results --- search service may be blocked currently."
 
     @staticmethod
     def make_display_name(name: str) -> str:
@@ -87,28 +88,47 @@ class Tool:
         return tools
 
     @staticmethod
-    def run_tool(tool_info: InteractionToolCall):
-        if tool_info['tool_called'] == "run_command":
-            args = json.loads(tool_info['tool_arguments'])
+    def ollama_tool_to_interaction(ollama_tool) -> InteractionToolCall:
+        
+        tool_call: InteractionToolCall  = {
+            "tool_called": ollama_tool.function.name,
+            "tool_arguments": json.dumps(ollama_tool.function.arguments),
+            "tool_call_id": None
+        }
 
-            return Tool.run_command(args['command'])
+        return tool_call
 
-        elif tool_info['tool_called'] == "brainstorm":
-            args = json.loads(tool_info['tool_arguments'])
+    @staticmethod
+    def run_tool(tool_info: InteractionToolCall) -> str:
+        try:
+            if tool_info['tool_called'] == "run_command":
+                args = json.loads(tool_info['tool_arguments'])
 
-            return Tool.brainstorm(args['thoughts'])
+                return Tool.run_command(args['command'])
 
-        elif tool_info['tool_called'] == "view_url":
-            args = json.loads(tool_info['tool_arguments'])
+            elif tool_info['tool_called'] == "thought":
+                args = json.loads(tool_info['tool_arguments'])
 
-            return Tool.view_url(args['url'])
+                return Tool.thought(args['thoughts'])
 
-        elif tool_info['tool_called'] == "search_web":
-            args = json.loads(tool_info['tool_arguments'])
+            elif tool_info['tool_called'] == "view_url":
+                args = json.loads(tool_info['tool_arguments'])
 
-            return Tool.search_web(args['query'])
+                return Tool.view_url(args['url'])
 
-        return ""
+            elif tool_info['tool_called'] == "search_web":
+                args = json.loads(tool_info['tool_arguments'])
+
+                return Tool.search_web(args['query'])
+
+        except Exception as e:
+
+            logger = logging.getLogger(__name__)
+            logger.exception(f"Error running tool")
+
+            return f"Error running tool: {type(e).__name__}: {e}"
+
+        return "Unrecognized tool."
 
     @staticmethod
     def create_tool_message(tool_info: InteractionToolCall, result: str) -> ToolMessage:
