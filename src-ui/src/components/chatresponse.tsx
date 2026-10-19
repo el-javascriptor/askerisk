@@ -1,8 +1,9 @@
 import styles from './chatresponse.module.css'
 import CommandItem from './microComponents/commandItem';
 import ThoughtItem from './microComponents/thoughtItem';
+import EventItem from './microComponents/eventItem';
 import askeriskLogo from './assets/AskeriskSmall.svg'
-import type { ParseStatus, ContinuityStatus, ChatFragment, DataBundle } from '../helpers/definitions';
+import type { DataBundle } from '../helpers/definitions';
 
 interface ChatItemProps {
     bundles: DataBundle[];
@@ -24,7 +25,7 @@ export function ChatItem({ bundles, role, show_loading_animation }: ChatItemProp
                 // TODO: Create new event microComponent
             } else if (bundle.type == "event") {
                 if (bundle.status == "error") {
-                    return <p key={index}>ERROR: {bundle.content}</p>;
+                    return <EventItem key={index} bundle={bundle} />;
                 }
             } else {
                 return <p key={index}>{bundle.content}</p>;

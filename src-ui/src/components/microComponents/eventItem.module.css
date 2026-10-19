@@ -1,0 +1,25 @@
+.eventItem {
+    width: fit-content;
+    font-family: monospace, sans-serif;
+    font-size: 12px;
+    color: black;
+    background-color: rgb(150,30,30);
+    height: fit-content;
+    border-radius: 10px;
+    box-sizing: border-box;
+    padding: 4px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    column-gap: 5px;
+}
+
+.dot {
+    width: 15px;
+    height: 15px;
+    background-color: rgb(255,50,50);
+    border-radius: 7.5px;
+    display: block;
+    margin: 0px;
+}
