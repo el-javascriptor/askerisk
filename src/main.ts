@@ -3,7 +3,7 @@ import * as path from 'path';
 
 const WINDOW_URL = "http://localhost:5173";
 const REACT_PACKAGE_DESTINATION = "../src-ui/dist/index.html";
-const API_ENDPOINT = "http://localhost:5000";
+// const API_ENDPOINT = "http://localhost:5000";
 
 app.commandLine.appendSwitch('enable-transparent-visuals');
 let win: BrowserWindow;
@@ -36,7 +36,7 @@ async function createWindow() {
         win.hide();
     })
 
-    if (!app.isPackaged) {
+    if (!app.isPackaged && process.env.ASKERISK_PRODUCTION != "1") {
         win.loadURL(WINDOW_URL);
         win.webContents.on('did-fail-load', (event, error, description, valid_url) => {
             console.log(`Failed1: ${valid_url} -------------`)
@@ -53,7 +53,7 @@ async function createWindow() {
         })
         // win.webContents.openDevTools();
     } else {
-        win.loadFile(path.join(__dirname, REACT_PACKAGE_DESTINATION));
+        win.loadFile(path.join(import.meta.dirname, REACT_PACKAGE_DESTINATION));
     }
 }
 
