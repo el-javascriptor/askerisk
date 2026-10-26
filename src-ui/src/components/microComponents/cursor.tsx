@@ -15,14 +15,9 @@ export function Cursor({ x, y, commandMode, visible }: CursorProps) {
 export function recalculateCursorLoc(barElement: HTMLDivElement): PositionType | null {
     const selection = window.getSelection();
 
-    console.log(selection?.focusNode);
-    console.log(selection?.focusOffset);
-
     if (!selection?.rangeCount) return null;
 
     const range = selection.getRangeAt(0).cloneRange();
-
-    console.log(range.getClientRects().length);
     range.collapse()
 
     let box = range.getClientRects()[0];
