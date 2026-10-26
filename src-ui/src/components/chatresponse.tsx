@@ -2,6 +2,7 @@ import styles from './chatresponse.module.css'
 import CommandItem from './microComponents/commandItem';
 import ThoughtItem from './microComponents/thoughtItem';
 import EventItem from './microComponents/eventItem';
+import { ProcessedMarkdown } from './microComponents/markdown';
 import askeriskLogo from './assets/AskeriskSmall.svg'
 import type { DataBundle } from '../helpers/definitions';
 
@@ -26,7 +27,7 @@ export function ChatItem({ bundles, role, show_loading_animation }: ChatItemProp
                     return <EventItem key={index} bundle={bundle} />;
                 }
             } else {
-                return <p key={index}>{bundle.content}</p>;
+                return <ProcessedMarkdown text={bundle.content} />;
             }
         })}
 
