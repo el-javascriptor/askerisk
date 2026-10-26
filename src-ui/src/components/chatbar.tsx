@@ -30,7 +30,10 @@ function ChatBar({ generateResponse }: ChatBarProps) {
         }
     }
 
-    const updatePrompt = () => setPrompt(editableDivRef.current?.innerText || "");
+    const updatePrompt = () => {
+        setPrompt(editableDivRef.current?.innerText || "");
+        if (editableDivRef.current?.innerText.trim() == "") editableDivRef.current.innerHTML = "";
+    }
 
     const overwritePrompt = (new_prompt: string): boolean => {
         if (!editableDivRef.current) return false;
