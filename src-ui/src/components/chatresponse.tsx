@@ -21,8 +21,6 @@ export function ChatItem({ bundles, role, show_loading_animation }: ChatItemProp
                 return <ThoughtItem key={index} bundle={bundle} />;
             } else if (bundle.type == "tool") {
                 return <CommandItem key={index} bundle={bundle} />;
-
-                // TODO: Create new event microComponent
             } else if (bundle.type == "event") {
                 if (bundle.status == "error") {
                     return <EventItem key={index} bundle={bundle} />;
