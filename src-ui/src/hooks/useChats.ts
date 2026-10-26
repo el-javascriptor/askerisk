@@ -1,9 +1,10 @@
 // This file routes prompts to their various services,
 // and keeps track of a few states.
 import { useCallback, useRef, useState } from "react";
-import type { Chat, DataBundle } from "../helpers/definitions";
+import type { Chat, CommandScope, DataBundle } from "../helpers/definitions";
 import { addTokenToPrevChats } from "../helpers/chat_helpers";
 import { streamGenResponse } from "../api";
+import { process_command } from "../helpers/commands";
 
 // this function acts as the router
 
@@ -16,20 +17,18 @@ export function useChats() {
 
     const clearChatsPending = chats.length == 0;
 
-    const process_prompt = useCallback((prompt: string) => {
+    const process_prompt = useCallback((prompt: string): string => {
 
-        if (prompt.length == 0) return;
+        let new_prompt = "";
+
+        if (prompt.length == 0) return "";
 
         // in this case, the prompt is a command, not an agentic question
         if (prompt[0] == "/") {
 
-            if (prompt == "/clear") {
-                setChats([]);
-            } else if (prompt == "/mode ollama") {
-                useOllamaRef.current = true;
-            } else if (prompt == "/mode gemini") {
-                useOllamaRef.current = false;
-            }
+            const commandScope: CommandScope = { setChats, useOllamaRef };
+
+            new_prompt = process_command(prompt, commandScope);
 
             // in this case, the prompt is an agentic question
         } else {
@@ -48,6 +47,8 @@ export function useChats() {
                 () => { }
             );
         }
+
+        return new_prompt;
 
     }, [chats]);
 

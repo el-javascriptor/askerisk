@@ -49,3 +49,9 @@ export interface TokenBundle {
 }
 
 export type DataBundle = ToolBundle | EventBundle | TokenBundle;
+
+// The following type defines the functionality that the commands can access.
+export interface CommandScope {
+    setChats: React.Dispatch<React.SetStateAction<Chat[]>>,
+    useOllamaRef: React.RefObject<boolean>
+}

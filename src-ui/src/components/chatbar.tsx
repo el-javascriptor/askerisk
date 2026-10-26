@@ -24,13 +24,33 @@ function ChatBar({ generateResponse }: ChatBarProps) {
         if (event.key == "Enter" && event.type == "keydown") {
             event.preventDefault();
             if (editableDivRef.current) editableDivRef.current.innerHTML = "";
-            generateResponse(prompt);
             setPrompt("");
-            requestAnimationFrame(refresh);
+            generateResponse(prompt, overwritePrompt);
+            setTimeout(refresh, 10);
         }
     }
 
     const updatePrompt = () => setPrompt(editableDivRef.current?.innerText || "");
+
+    const overwritePrompt = (new_prompt: string): boolean => {
+        if (!editableDivRef.current) return false;
+
+        setPrompt(new_prompt);
+        editableDivRef.current.innerText = new_prompt;
+        editableDivRef.current.focus();
+
+        const current_selection = window.getSelection();
+        const textNode = editableDivRef?.current?.firstChild;
+        current_selection?.selectAllChildren(textNode ?? editableDivRef.current);
+
+        if (textNode instanceof Text) {
+            current_selection?.collapse(textNode, textNode.length);
+        } else {
+            current_selection?.collapseToEnd();
+        }
+
+        return true;
+    }
 
     return <div className={styles.chatBar} ref={chatBarRef} >
         <img className={styles.chatImage} src={askeriskLogo} />

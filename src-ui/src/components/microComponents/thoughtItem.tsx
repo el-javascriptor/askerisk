@@ -1,5 +1,5 @@
 import styles from './thoughtItem.module.css'
-import type { ChatFragment, ToolBundle } from '../../helpers/definitions';
+import type { ToolBundle } from '../../helpers/definitions';
 
 interface ThoughtItemProps {
     bundle: ToolBundle;

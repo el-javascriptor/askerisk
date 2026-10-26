@@ -9,9 +9,11 @@ function App() {
 
     const pendingChat = chats.at(-1)?.content.at(-1)?.type != "event";
 
-    function generateResponse(prompt: string) {
+    function generateResponse(prompt: string, overwritePrompt: Function) {
 
-        process_prompt(prompt);
+        const new_prompt = process_prompt(prompt);
+
+        overwritePrompt(new_prompt);
 
         setTimeout(() => {
             const scroll_container = document.querySelector(".chat-holder");
