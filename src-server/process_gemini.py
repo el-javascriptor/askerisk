@@ -1,13 +1,20 @@
 from google import genai
 from helpers.tools import Tool
 from helpers.misc import load_instructions
-from helpers.custom_types import ObjectTokenGenerator, Data, InteractionToolCall, TokenBundle, ToolBundle, ToolMessage
+from helpers.custom_types import (
+    ObjectTokenGenerator,
+    Data,
+    InteractionToolCall,
+    TokenBundle,
+    ToolBundle,
+    ToolMessage,
+)
 from helpers.gemini_helpers import process_interaction_event
 from dotenv import load_dotenv
-from google.genai.interactions import StepParam # type: ignore
+from google.genai.interactions import StepParam  # type: ignore
 from typing import List
 
-GEMINI_MODEL="gemini-3.5-flash-lite"
+GEMINI_MODEL = "gemini-3.5-flash-lite"
 
 load_dotenv()
 
@@ -17,33 +24,43 @@ ollama_tools = None
 system_instructions = load_instructions()
 tools = Tool.gemini_format(Tool.get_tools())
 
-def query_gemini(prompt: str | List[StepParam] | List[ToolMessage], clear_history: bool) -> ObjectTokenGenerator:
+
+def query_gemini(
+    prompt: str | List[StepParam] | List[ToolMessage], clear_history: bool
+) -> ObjectTokenGenerator:
 
     global interaction_id
 
     if clear_history:
         interaction_id = None
-    
+
     # function calling stuff
     tool_info: InteractionToolCall = {
-        'tool_arguments': '',
-        'tool_call_id': None,
-        'tool_called': None
+        "tool_arguments": "",
+        "tool_call_id": None,
+        "tool_called": None,
     }
 
-    interaction = client.interactions.create(model=GEMINI_MODEL, input=prompt, system_instruction=system_instructions, previous_interaction_id=interaction_id, stream=True, tools=tools)
+    interaction = client.interactions.create(
+        model=GEMINI_MODEL,
+        input=prompt,
+        system_instruction=system_instructions,
+        previous_interaction_id=interaction_id,
+        stream=True,
+        tools=tools,
+        generation_config={"thinking_summaries": "auto", "thinking_level": "high"},
+    )
 
     for event in interaction:
-
-        if isinstance(event, tuple): continue
+        if isinstance(event, tuple):
+            continue
 
         event_results = process_interaction_event(event, tool_info)
 
         if event_results["event"] == "token":
-
             object_token: TokenBundle = {
                 "type": "token",
-                "content": event_results["content"]
+                "content": event_results["content"],
             }
 
             yield object_token
@@ -51,14 +68,14 @@ def query_gemini(prompt: str | List[StepParam] | List[ToolMessage], clear_histor
         if event.event_type == "interaction.created":
             interaction_id = event.interaction.id
 
-    if tool_info['tool_call_id']:
+    if tool_info["tool_call_id"]:
         result = Tool.run_tool(tool_info)
-        
+
         tool_bundle: ToolBundle = {
             "type": "tool",
             "name": tool_info["tool_called"] or "Unrecognized Tool",
             "arguments": tool_info["tool_arguments"],
-            "result": result
+            "result": result,
         }
 
         yield tool_bundle
